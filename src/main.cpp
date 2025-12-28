@@ -81,7 +81,7 @@ void loop()
     }
     String advStr = ConfigObj::combo->isAdvertizing() ? "true" : "false";
     Logger.debug( prefs::MYLOG, "BT wait for connevting (Advertizing: %s)", advStr.c_str() );
-    if( !ConfigObj::combo->isAdvertizing())
+    if ( !ConfigObj::combo->isAdvertizing() )
     {
       ConfigObj::combo->startAdvertizing();
     }
@@ -103,15 +103,15 @@ void loop()
     Logger.debug( prefs::MYLOG, "mouse action triggered..." );
     if ( toggle )
     {
-      ConfigObj::combo->move( 10, 1 );
+      ConfigObj::combo->m_move( 10, 1 );
     }
     else
     {
-      ConfigObj::combo->move( 1, 10 );
+      ConfigObj::combo->m_move( 1, 10 );
     }
     toggle = !toggle;
     // ConfigObj::combo->move(1, 1);
-    // ConfigObj::combo->click(MOUSE_RIGHT);
+    // ConfigObj::combo->m_click(MOUSE_RIGHT);
     uint8_t col = colorcounter & 0x03;
     switch ( col )
     {

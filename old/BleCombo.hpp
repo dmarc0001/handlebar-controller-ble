@@ -16,14 +16,6 @@
 
 #include "keycodes.hpp"
 
-//  Low level key report: up to 6 keys and shift, ctrl etc at once
-typedef struct
-{
-  uint8_t modifiers;
-  uint8_t reserved;
-  uint8_t keys[6];
-} KeyReport;
-
 using NimBLEHIDDevicePtr = std::shared_ptr<NimBLEHIDDevice>;
 
 //

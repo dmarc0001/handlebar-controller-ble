@@ -1,5 +1,14 @@
 #pragma once
 
+
+typedef struct
+{
+  uint8_t modifiers;
+  uint8_t reserved;
+  uint8_t keys[6];
+} KeyReport;
+
+
 constexpr uint8_t MOUSE_LEFT = 1;
 constexpr uint8_t MOUSE_RIGHT = 2;
 constexpr uint8_t MOUSE_MIDDLE = 4;

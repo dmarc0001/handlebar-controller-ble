@@ -5,7 +5,7 @@
 
 #include "sdkconfig.h"
 
-#if defined(CONFIG_ARDUHAL_ESP_LOG)
+#if defined( CONFIG_ARDUHAL_ESP_LOG )
 #include "esp32-hal-log.h"
 #define LOG_TAG ""
 #else
@@ -17,150 +17,162 @@ static const char *LOG_TAG = "NimBLEDevice";
 #include "appPreferences.hpp"
 #include "BleHidDescriptors.hpp"
 
-BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel)
-		: _buttons(0), hid(0)
+BleCombo::BleCombo( std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel ) : _buttons( 0 ), hid( 0 )
 {
-	this->deviceName = deviceName;
-	this->deviceManufacturer = deviceManufacturer;
-	this->batteryLevel = batteryLevel;
+  connectionStatus = std::make_shared<BleConnectionStatus>();
+  this->deviceName = deviceName;
+  this->deviceManufacturer = deviceManufacturer;
+  this->batteryLevel = batteryLevel;
 }
 
-void BleCombo::begin(void)
+void BleCombo::begin( void )
 {
-	Logger.debug(prefs::MYLOG, "BleCombo::begin...");
-  NimBLEDevice::init(deviceName);
+  Logger.debug( prefs::MYLOG, "BleCombo::begin..." );
+  NimBLEDevice::init( deviceName );
   // BLEDevice::setSecurityAuth(BLE_SM_PAIR_AUTHREQ_BOND);
-	BLEDevice::setSecurityAuth(true, true, false);
+  BLEDevice::setSecurityAuth( true, true, false );
 
-  Logger.debug(prefs::MYLOG, "BleCombo::begin create Server...");
+  Logger.debug( prefs::MYLOG, "BleCombo::begin create Server..." );
   NimBLEServer *pServer = NimBLEDevice::createServer();
-  Logger.debug(prefs::MYLOG, "BleCombo::begin set callbacks...");
-  pServer->setCallbacks(this);
+  Logger.debug( prefs::MYLOG, "BleCombo::begin set callbacks..." );
+  pServer->setCallbacks( this );
 
-  Logger.debug(prefs::MYLOG, "BleCombo::begin create HID Info...");
-  hid        = new NimBLEHIDDevice(pServer);
-  inputMouse = hid->getInputReport(0);  // <-- input REPORTID from report map
+  Logger.debug( prefs::MYLOG, "BleCombo::begin create HID Info..." );
+  hid = new NimBLEHIDDevice( pServer );
+  connectionStatus->inputMouse = hid->getInputReport( 0 );  // <-- input REPORTID from report map
 
-  hid->setManufacturer(deviceManufacturer);
-  hid->setPnp(0x02, 0xe502, 0xa111, 0x0210);
-  hid->setHidInfo(0x00, 0x02);
-	hid->setReportMap(_hidReportDescriptorPtr, hidReportDescriptorSize);
+  hid->setManufacturer( deviceManufacturer );
+  hid->setPnp( 0x02, 0xe502, 0xa111, 0x0210 );
+  hid->setHidInfo( 0x00, 0x02 );
+  hid->setReportMap( _hidReportDescriptorPtr, hidReportDescriptorSize );
   hid->startServices();
 
-	startAdvertizing();
+  startAdvertizing();
 
-	hid->setBatteryLevel(batteryLevel);
-  Logger.debug(prefs::MYLOG, "BleCombo::begin...OK");
+  hid->setBatteryLevel( batteryLevel );
+  Logger.debug( prefs::MYLOG, "BleCombo::begin...OK" );
 }
 
-void BleCombo::end(void)
+void BleCombo::end( void )
 {
-	NimBLEDevice::deinit(true);
+  NimBLEDevice::deinit( true );
 }
 
 void BleCombo::startAdvertizing()
 {
-  Logger.debug(prefs::MYLOG, "BleCombo::begin start advertizing...");
-	NimBLEServer *pServer = NimBLEDevice::getServer();
-	NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
-	pAdvertising->setAppearance(HID_MOUSE);
-	pAdvertising->addServiceUUID(hid->getHidService()->getUUID());
-	pAdvertising->setName(this->deviceName);
-	pAdvertising->setManufacturerData(this->deviceManufacturer);
-	pAdvertising->start();
+  Logger.debug( prefs::MYLOG, "BleCombo::begin start advertizing..." );
+  NimBLEServer *pServer = NimBLEDevice::getServer();
+  NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+  pAdvertising->setAppearance( HID_MOUSE );
+  pAdvertising->addServiceUUID( hid->getHidService()->getUUID() );
+  pAdvertising->setName( this->deviceName );
+  pAdvertising->setManufacturerData( this->deviceManufacturer );
+  pAdvertising->start();
 }
 
 bool BleCombo::isAdvertizing()
 {
-	NimBLEServer *pServer = NimBLEDevice::getServer();
-	NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
-	return pAdvertising->isAdvertising();
+  NimBLEServer *pServer = NimBLEDevice::getServer();
+  NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+  return pAdvertising->isAdvertising();
 }
 
-void BleCombo::click(uint8_t b)
+void BleCombo::rawAction( uint8_t msg[], char msgSize )
 {
-	_buttons = b;
-	move(0, 0, 0, 0);
-	_buttons = 0;
-	move(0, 0, 0, 0);
-}
-
-void BleCombo::move(signed char x, signed char y, signed char wheel, signed char hWheel)
-{
-	if (this->isConnected())
+	// i dont know what this mADE
+	if ( this->isConnected() )
 	{
-		uint8_t m[5];
-		m[0] = _buttons;
-		m[1] = x;
-		m[2] = y;
-		m[3] = wheel;
-		m[4] = hWheel;
-		this->inputMouse->setValue(m, 5);
-		this->inputMouse->notify();
+		connectionStatus->inputMouse->setValue( msg, msgSize );
+		connectionStatus->inputMouse->notify();
 	}
 }
 
-void BleCombo::buttons(uint8_t b)
+void BleCombo::m_click( uint8_t b )
 {
-	if (b != _buttons)
-	{
-		_buttons = b;
-		move(0, 0, 0, 0);
-	}
+  _buttons = b;
+  m_move( 0, 0, 0, 0 );
+  _buttons = 0;
+  m_move( 0, 0, 0, 0 );
 }
 
-void BleCombo::press(uint8_t b)
+void BleCombo::m_move( signed char x, signed char y, signed char wheel, signed char hWheel )
 {
-	buttons(_buttons | b);
+  if ( this->isConnected() )
+  {
+    uint8_t m[ 5 ];
+    m[ 0 ] = _buttons;
+    m[ 1 ] = x;
+    m[ 2 ] = y;
+    m[ 3 ] = wheel;
+    m[ 4 ] = hWheel;
+    connectionStatus->inputMouse->setValue( m, 5 );
+    connectionStatus->inputMouse->notify();
+  }
 }
 
-void BleCombo::release(uint8_t b)
+void BleCombo::m_buttons( uint8_t b )
 {
-	buttons(_buttons & ~b);
+  if ( b != _buttons )
+  {
+    _buttons = b;
+    m_move( 0, 0, 0, 0 );
+  }
 }
 
-bool BleCombo::isPressed(uint8_t b) const
+void BleCombo::m_press( uint8_t b )
 {
-	if ((b & _buttons) > 0)
-		return true;
-	return false;
+  m_buttons( _buttons | b );
 }
 
-bool BleCombo::isConnected(void) const
+void BleCombo::m_release( uint8_t b )
 {
-	return connected;
+  m_buttons( _buttons & ~b );
 }
 
-void BleCombo::setBatteryLevel(uint8_t level)
+bool BleCombo::m_isPressed( uint8_t b ) const
 {
-	this->batteryLevel = level;
-	if (hid != 0)
-		this->hid->setBatteryLevel(this->batteryLevel);
+  if ( ( b & _buttons ) > 0 )
+    return true;
+  return false;
 }
 
-void BleCombo::onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo)
+bool BleCombo::isConnected( void ) const
 {
-	connected = true;
-	if (connectCallback)
-		connectCallback();		
-  // startAdvertizing();		
-  Logger.debug(prefs::MYLOG, "BleCombo::onConnect...");
+  return connected;
 }
 
-void BleCombo::onDisconnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason)
+void BleCombo::setBatteryLevel( uint8_t level )
 {
-	connected = false;
-	if (disconnectCallback)
-		disconnectCallback();
-  Logger.debug(prefs::MYLOG, "BleCombo::onDisconnect...");
+  this->batteryLevel = level;
+  if ( hid != 0 )
+    this->hid->setBatteryLevel( this->batteryLevel );
 }
 
-void BleCombo::onConnect(Callback cb)
+void BleCombo::onConnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo )
 {
-	connectCallback = cb;
+  connected = true;
+  if ( connectCallback )
+    connectCallback();
+  // startAdvertizing();
+  Logger.debug( prefs::MYLOG, "BleCombo::onConnect..." );
 }
 
-void BleCombo::onDisconnect(Callback cb)
+void BleCombo::onDisconnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason )
 {
-	disconnectCallback = cb;
+  connected = false;
+  if ( disconnectCallback )
+    disconnectCallback();
+  Logger.debug( prefs::MYLOG, "BleCombo::onDisconnect..." );
+}
+
+void BleCombo::onConnect( Callback cb )
+{
+  Logger.debug(prefs::MYLOG, "BleCombo::onConnect set callback");
+  connectCallback = cb;
+}
+
+void BleCombo::onDisconnect( Callback cb )
+{
+  Logger.debug(prefs::MYLOG, "BleCombo::onDisconnect set callback");
+  disconnectCallback = cb;
 }
