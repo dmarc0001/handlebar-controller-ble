@@ -35,6 +35,7 @@ void BleCombo::begin( void )
   Logger.debug( prefs::MYLOG, "BleCombo::begin create Server..." );
   NimBLEServer *pServer = NimBLEDevice::createServer();
   Logger.debug( prefs::MYLOG, "BleCombo::begin set callbacks..." );
+  // pServer->setCallbacks( static_cast<NimBLEServerCallbacks*>(connectionStatus.get()) );
   pServer->setCallbacks( this );
 
   Logger.debug( prefs::MYLOG, "BleCombo::begin create HID Info..." );
@@ -138,7 +139,7 @@ bool BleCombo::m_isPressed( uint8_t b ) const
 
 bool BleCombo::isConnected( void ) const
 {
-  return connected;
+  return connectionStatus->connected;
 }
 
 void BleCombo::setBatteryLevel( uint8_t level )
@@ -150,7 +151,7 @@ void BleCombo::setBatteryLevel( uint8_t level )
 
 void BleCombo::onConnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo )
 {
-  connected = true;
+  connectionStatus->connected = true;
   if ( connectCallback )
     connectCallback();
   // startAdvertizing();
@@ -159,7 +160,7 @@ void BleCombo::onConnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo )
 
 void BleCombo::onDisconnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason )
 {
-  connected = false;
+  connectionStatus->connected = false;
   if ( disconnectCallback )
     disconnectCallback();
   Logger.debug( prefs::MYLOG, "BleCombo::onDisconnect..." );

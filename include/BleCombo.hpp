@@ -21,7 +21,7 @@ using NimBLEHIDDevicePtr = std::shared_ptr< NimBLEHIDDevice >;
 //
 // CLASS DEFINITION
 //
-class BleCombo : protected NimBLEServerCallbacks
+class BleCombo: public NimBLEServerCallbacks
 {
   public:
   using Callback = std::function< void( void ) >;
@@ -62,7 +62,6 @@ class BleCombo : protected NimBLEServerCallbacks
   uint8_t batteryLevel;
   std::string deviceManufacturer;
   std::string deviceName;
-  bool connected = false;
 
   Callback connectCallback = nullptr;     // maybe i want to callback something on connect
   Callback disconnectCallback = nullptr;  // maybe i want to callback something on disconnect

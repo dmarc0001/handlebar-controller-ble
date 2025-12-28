@@ -11,21 +11,11 @@
 #include <Elog.h>
 #include <memory>
 
-class BleConnectionStatus : public NimBLEServerCallbacks
+class BleConnectionStatus 
 {
 public:
   BleConnectionStatus(void) {};
   bool connected = false;
-  void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo)
-  {
-    Logger.debug(prefs::MYLOG, "BleConnectionStatus::onConnect...");
-    this->connected = true;
-  };
-  void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo)
-  {
-    Logger.debug(prefs::MYLOG, "BleConnectionStatus::onDisConnect...");
-    this->connected = false;
-  };
   NimBLECharacteristic *inputKeyboard;
   NimBLECharacteristic *outputKeyboard;
   NimBLECharacteristic *inputMouse;
