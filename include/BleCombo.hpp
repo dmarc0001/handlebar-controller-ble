@@ -45,15 +45,17 @@ class BleCombo : protected NimBLEServerCallbacks
     bool isPressed(uint8_t b = MOUSE_LEFT) const;  // check LEFT by default
     bool isConnected(void) const;
     void setBatteryLevel(uint8_t level);
+    bool isAdvertizing();
     void onConnect(Callback cb);
     void onDisconnect(Callback cb);
+    void startAdvertizing();
 
   protected:
     void buttons(uint8_t b);
     void rawAction(uint8_t msg[], char msgSize);
     void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override;
     void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override;
-
+    
   protected:
     uint8_t               _buttons;
     NimBLEHIDDevice*      hid;
@@ -64,8 +66,8 @@ class BleCombo : protected NimBLEServerCallbacks
     std::string deviceName;
     bool        connected = false;
 
-    Callback connectCallback    = nullptr;
-    Callback disconnectCallback = nullptr;
+    Callback connectCallback    = nullptr; // maybe i want to callback something on connect
+    Callback disconnectCallback = nullptr; // maybe i want to callback something on disconnect
 };
 
 

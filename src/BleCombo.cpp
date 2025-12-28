@@ -15,92 +15,7 @@ static const char *LOG_TAG = "NimBLEDevice";
 
 #include <Elog.h>
 #include "appPreferences.hpp"
-
-// Report IDs:
-constexpr uint8_t KEYBOARD_ID = 0x01;
-constexpr uint8_t MOUSE_ID = 0x00;
-
-static const uint8_t _hidReportDescriptor_mouse[] = {
-		USAGE_PAGE(1), 0x01, // USAGE_PAGE (Generic Desktop)
-		USAGE(1), 0x02,			 // USAGE (Mouse)
-		COLLECTION(1), 0x01, // COLLECTION (Application)
-		USAGE(1), 0x01,			 //   USAGE (Pointer)
-		COLLECTION(1), 0x00, //   COLLECTION (Physical)
-		// ------------------------------------------------- Buttons (Left, Right, Middle, Back, Forward)
-		USAGE_PAGE(1), 0x09,			//     USAGE_PAGE (Button)
-		USAGE_MINIMUM(1), 0x01,		//     USAGE_MINIMUM (Button 1)
-		USAGE_MAXIMUM(1), 0x05,		//     USAGE_MAXIMUM (Button 5)
-		LOGICAL_MINIMUM(1), 0x00, //     LOGICAL_MINIMUM (0)
-		LOGICAL_MAXIMUM(1), 0x01, //     LOGICAL_MAXIMUM (1)
-		REPORT_SIZE(1), 0x01,			//     REPORT_SIZE (1)
-		REPORT_COUNT(1), 0x05,		//     REPORT_COUNT (5)
-		HIDINPUT(1), 0x02,				//     INPUT (Data, Variable, Absolute) ;5 button bits
-		// ------------------------------------------------- Padding
-		REPORT_SIZE(1), 0x03,	 //     REPORT_SIZE (3)
-		REPORT_COUNT(1), 0x01, //     REPORT_COUNT (1)
-		HIDINPUT(1), 0x03,		 //     INPUT (Constant, Variable, Absolute) ;3 bit padding
-		// ------------------------------------------------- X/Y position, Wheel
-		USAGE_PAGE(1), 0x01,			//     USAGE_PAGE (Generic Desktop)
-		USAGE(1), 0x30,						//     USAGE (X)
-		USAGE(1), 0x31,						//     USAGE (Y)
-		USAGE(1), 0x38,						//     USAGE (Wheel)
-		LOGICAL_MINIMUM(1), 0x81, //     LOGICAL_MINIMUM (-127)
-		LOGICAL_MAXIMUM(1), 0x7f, //     LOGICAL_MAXIMUM (127)
-		REPORT_SIZE(1), 0x08,			//     REPORT_SIZE (8)
-		REPORT_COUNT(1), 0x03,		//     REPORT_COUNT (3)
-		HIDINPUT(1), 0x06,				//     INPUT (Data, Variable, Relative) ;3 bytes (X,Y,Wheel)
-		// ------------------------------------------------- Horizontal wheel
-		USAGE_PAGE(1), 0x0c,			//     USAGE PAGE (Consumer Devices)
-		USAGE(2), 0x38, 0x02,			//     USAGE (AC Pan)
-		LOGICAL_MINIMUM(1), 0x81, //     LOGICAL_MINIMUM (-127)
-		LOGICAL_MAXIMUM(1), 0x7f, //     LOGICAL_MAXIMUM (127)
-		REPORT_SIZE(1), 0x08,			//     REPORT_SIZE (8)
-		REPORT_COUNT(1), 0x01,		//     REPORT_COUNT (1)
-		HIDINPUT(1), 0x06,				//     INPUT (Data, Var, Rel)
-		END_COLLECTION(0),				//   END_COLLECTION
-		END_COLLECTION(0)					// END_COLLECTION
-};
-
-static const uint8_t _hidReportDescriptor[] = {
-		USAGE_PAGE(1), 0x01, // USAGE_PAGE (Generic Desktop)
-		USAGE(1), 0x02,			 // USAGE (Mouse)
-		COLLECTION(1), 0x01, // COLLECTION (Application)
-		USAGE(1), 0x01,			 //   USAGE (Pointer)
-		COLLECTION(1), 0x00, //   COLLECTION (Physical)
-		// ------------------------------------------------- Buttons (Left, Right, Middle, Back, Forward)
-		USAGE_PAGE(1), 0x09,			//     USAGE_PAGE (Button)
-		USAGE_MINIMUM(1), 0x01,		//     USAGE_MINIMUM (Button 1)
-		USAGE_MAXIMUM(1), 0x05,		//     USAGE_MAXIMUM (Button 5)
-		LOGICAL_MINIMUM(1), 0x00, //     LOGICAL_MINIMUM (0)
-		LOGICAL_MAXIMUM(1), 0x01, //     LOGICAL_MAXIMUM (1)
-		REPORT_SIZE(1), 0x01,			//     REPORT_SIZE (1)
-		REPORT_COUNT(1), 0x05,		//     REPORT_COUNT (5)
-		HIDINPUT(1), 0x02,				//     INPUT (Data, Variable, Absolute) ;5 button bits
-		// ------------------------------------------------- Padding
-		REPORT_SIZE(1), 0x03,	 //     REPORT_SIZE (3)
-		REPORT_COUNT(1), 0x01, //     REPORT_COUNT (1)
-		HIDINPUT(1), 0x03,		 //     INPUT (Constant, Variable, Absolute) ;3 bit padding
-		// ------------------------------------------------- X/Y position, Wheel
-		USAGE_PAGE(1), 0x01,			//     USAGE_PAGE (Generic Desktop)
-		USAGE(1), 0x30,						//     USAGE (X)
-		USAGE(1), 0x31,						//     USAGE (Y)
-		USAGE(1), 0x38,						//     USAGE (Wheel)
-		LOGICAL_MINIMUM(1), 0x81, //     LOGICAL_MINIMUM (-127)
-		LOGICAL_MAXIMUM(1), 0x7f, //     LOGICAL_MAXIMUM (127)
-		REPORT_SIZE(1), 0x08,			//     REPORT_SIZE (8)
-		REPORT_COUNT(1), 0x03,		//     REPORT_COUNT (3)
-		HIDINPUT(1), 0x06,				//     INPUT (Data, Variable, Relative) ;3 bytes (X,Y,Wheel)
-		// ------------------------------------------------- Horizontal wheel
-		USAGE_PAGE(1), 0x0c,			//     USAGE PAGE (Consumer Devices)
-		USAGE(2), 0x38, 0x02,			//     USAGE (AC Pan)
-		LOGICAL_MINIMUM(1), 0x81, //     LOGICAL_MINIMUM (-127)
-		LOGICAL_MAXIMUM(1), 0x7f, //     LOGICAL_MAXIMUM (127)
-		REPORT_SIZE(1), 0x08,			//     REPORT_SIZE (8)
-		REPORT_COUNT(1), 0x01,		//     REPORT_COUNT (1)
-		HIDINPUT(1), 0x06,				//     INPUT (Data, Var, Rel)
-		END_COLLECTION(0),				//   END_COLLECTION
-		END_COLLECTION(0)					// END_COLLECTION
-};
+#include "BleHidDescriptors.hpp"
 
 BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel)
 		: _buttons(0), hid(0)
@@ -113,30 +28,27 @@ BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8
 void BleCombo::begin(void)
 {
 	Logger.debug(prefs::MYLOG, "BleCombo::begin...");
-	NimBLEDevice::init(deviceName);
-	BLEDevice::setSecurityAuth(BLE_SM_PAIR_AUTHREQ_BOND);
+  NimBLEDevice::init(deviceName);
+  // BLEDevice::setSecurityAuth(BLE_SM_PAIR_AUTHREQ_BOND);
+	BLEDevice::setSecurityAuth(true, true, false);
 
   Logger.debug(prefs::MYLOG, "BleCombo::begin create Server...");
-	NimBLEServer *pServer = NimBLEDevice::createServer();
+  NimBLEServer *pServer = NimBLEDevice::createServer();
   Logger.debug(prefs::MYLOG, "BleCombo::begin set callbacks...");
-	pServer->setCallbacks(this);
+  pServer->setCallbacks(this);
 
   Logger.debug(prefs::MYLOG, "BleCombo::begin create HID Info...");
-	hid = new NimBLEHIDDevice(pServer);
-	inputMouse = hid->getInputReport(MOUSE_ID); // <-- input REPORTID from report map
+  hid        = new NimBLEHIDDevice(pServer);
+  inputMouse = hid->getInputReport(0);  // <-- input REPORTID from report map
 
-  Logger.debug(prefs::MYLOG, "BleCombo::begin set hid properties...");
-	hid->setManufacturer(deviceManufacturer);
-	hid->setPnp(0x02, 0xe502, 0xa111, 0x0210);
-	hid->setHidInfo(0x00, 0x02);
-	hid->setReportMap((uint8_t *)_hidReportDescriptor_mouse, sizeof(_hidReportDescriptor_mouse));
-	hid->startServices();
+  hid->setManufacturer(deviceManufacturer);
+  hid->setPnp(0x02, 0xe502, 0xa111, 0x0210);
+  hid->setHidInfo(0x00, 0x02);
+	hid->setReportMap(_hidReportDescriptorPtr, hidReportDescriptorSize);
+  hid->startServices();
 
-  Logger.debug(prefs::MYLOG, "BleCombo::begin start advertizing...");
-	NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
-	pAdvertising->setAppearance(HID_MOUSE);
-	pAdvertising->addServiceUUID(hid->getHidService()->getUUID());
-	pAdvertising->start();
+	startAdvertizing();
+
 	hid->setBatteryLevel(batteryLevel);
   Logger.debug(prefs::MYLOG, "BleCombo::begin...OK");
 }
@@ -144,6 +56,25 @@ void BleCombo::begin(void)
 void BleCombo::end(void)
 {
 	NimBLEDevice::deinit(true);
+}
+
+void BleCombo::startAdvertizing()
+{
+  Logger.debug(prefs::MYLOG, "BleCombo::begin start advertizing...");
+	NimBLEServer *pServer = NimBLEDevice::getServer();
+	NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+	pAdvertising->setAppearance(HID_MOUSE);
+	pAdvertising->addServiceUUID(hid->getHidService()->getUUID());
+	pAdvertising->setName(this->deviceName);
+	pAdvertising->setManufacturerData(this->deviceManufacturer);
+	pAdvertising->start();
+}
+
+bool BleCombo::isAdvertizing()
+{
+	NimBLEServer *pServer = NimBLEDevice::getServer();
+	NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+	return pAdvertising->isAdvertising();
 }
 
 void BleCombo::click(uint8_t b)
@@ -212,6 +143,7 @@ void BleCombo::onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo)
 	connected = true;
 	if (connectCallback)
 		connectCallback();		
+  // startAdvertizing();		
   Logger.debug(prefs::MYLOG, "BleCombo::onConnect...");
 }
 
