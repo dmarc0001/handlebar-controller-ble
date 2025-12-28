@@ -40,7 +40,7 @@ void BleCombo::begin( void )
 
   Logger.debug( prefs::MYLOG, "BleCombo::begin create HID Info..." );
   hid = new NimBLEHIDDevice( pServer );
-  connectionStatus->inputMouse = hid->getInputReport( 0 );  // <-- input REPORTID from report map
+  connectionStatus->inputMouse = hid->getInputReport( MOUSE_ID );  // <-- input REPORTID from report map
 
   hid->setManufacturer( deviceManufacturer );
   hid->setPnp( 0x02, 0xe502, 0xa111, 0x0210 );
