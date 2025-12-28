@@ -34,12 +34,17 @@ void BleCombo::begin( void )
 
   Logger.debug( prefs::MYLOG, "BleCombo::begin create Server..." );
   NimBLEServer *pServer = NimBLEDevice::createServer();
-  Logger.debug( prefs::MYLOG, "BleCombo::begin set callbacks..." );
+	Logger.debug( prefs::MYLOG, "BleCombo::begin set callbacks..." );
   // pServer->setCallbacks( static_cast<NimBLEServerCallbacks*>(connectionStatus.get()) );
   pServer->setCallbacks( this );
 
   Logger.debug( prefs::MYLOG, "BleCombo::begin create HID Info..." );
-  hid = new NimBLEHIDDevice( pServer );
+  hid = std::make_shared<NimBLEHIDDevice>(pServer);
+	if (hid.get() == nullptr)
+	{
+		Logger.error(prefs::MYLOG, "BleCombo::begin...hid is nullptr!");
+		return;
+	}
   connectionStatus->inputMouse = hid->getInputReport( MOUSE_ID );  // <-- input REPORTID from report map
 
   hid->setManufacturer( deviceManufacturer );

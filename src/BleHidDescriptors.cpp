@@ -8,6 +8,7 @@ static const uint8_t _hidReportDescriptor[] = {
     USAGE_PAGE( 1 ), 0x01,  // USAGE_PAGE (Generic Desktop)
     USAGE( 1 ), 0x02,       // USAGE (Mouse)
     COLLECTION( 1 ), 0x01,  // COLLECTION (Application)
+    REPORT_ID( 1 ), MOUSE_ID,  //   REPORT_ID (2)
     USAGE( 1 ), 0x01,       //   USAGE (Pointer)
     COLLECTION( 1 ), 0x00,  //   COLLECTION (Physical)
     // ------------------------------------------------- Buttons (Left, Right, Middle, Back, Forward)
@@ -42,16 +43,16 @@ static const uint8_t _hidReportDescriptor[] = {
     REPORT_COUNT( 1 ), 0x01,     //     REPORT_COUNT (1)
     HIDINPUT( 1 ), 0x06,         //     INPUT (Data, Var, Rel)
     END_COLLECTION( 0 ),         //   END_COLLECTION
-    END_COLLECTION( 0 ),         // END_COLLECTION
+    END_COLLECTION( 0 ),          // END_COLLECTION
     //
     // Keyboard
     //
     USAGE_PAGE( 1 ), 0x01,  // USAGE_PAGE (Generic Desktop Ctrls)
     USAGE( 1 ), 0x06,       // USAGE (Keyboard)
     COLLECTION( 1 ), 0x01,  // COLLECTION (Application)
+    REPORT_ID( 1 ), KEYBOARD_ID,  //   REPORT_ID (1)
     // ------------------------------------------------- Keyboard
     USAGE_PAGE( 1 ), 0x07,        //   USAGE_PAGE (Kbrd/Keypad)
-    REPORT_ID( 1 ), KEYBOARD_ID,  //   REPORT_ID (1)
     USAGE_MINIMUM( 1 ), 0xE0,     //   USAGE_MINIMUM (0xE0)
     USAGE_MAXIMUM( 1 ), 0xE7,     //   USAGE_MAXIMUM (0xE7)
     LOGICAL_MINIMUM( 1 ), 0x00,   //   LOGICAL_MINIMUM (0)
@@ -197,11 +198,11 @@ static const uint8_t _hidReportDescriptor_mouse[] = {
     END_COLLECTION( 0 )          // END_COLLECTION
 };
 
-// uint8_t *_hidReportDescriptorPtr = const_cast< uint8_t * >( _hidReportDescriptor );
-// size_t hidReportDescriptorSize = sizeof( _hidReportDescriptor );
+uint8_t *_hidReportDescriptorPtr = const_cast< uint8_t * >( _hidReportDescriptor );
+size_t hidReportDescriptorSize = sizeof( _hidReportDescriptor );
 
 // uint8_t *_hidReportDescriptorPtr = const_cast< uint8_t * >( _hidReportDescriptor_keys );
 // size_t hidReportDescriptorSize = sizeof( _hidReportDescriptor_keys );
 
-uint8_t *_hidReportDescriptorPtr = const_cast< uint8_t * >( _hidReportDescriptor_mouse );
-size_t hidReportDescriptorSize = sizeof( _hidReportDescriptor_mouse );
+// uint8_t *_hidReportDescriptorPtr = const_cast< uint8_t * >( _hidReportDescriptor_mouse );
+// size_t hidReportDescriptorSize = sizeof( _hidReportDescriptor_mouse );

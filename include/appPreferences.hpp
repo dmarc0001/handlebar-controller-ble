@@ -4,7 +4,7 @@
 namespace prefs
 {
   constexpr int MYLOG = 0;
-  constexpr char *DEVICE_NAME = (char *)"C3-Combo Device-3"; //! device name for bluetooth
+  constexpr char *DEVICE_NAME = (char *)"C3-Combo Device-4"; //! device name for bluetooth
   constexpr char *DEVICE_MANUFACT = (char *)"DIRK M";      //! device name for bluetooth
   constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_DEBUG;   //! loglevel for App
   constexpr uint8_t LED_PIN = GPIO_NUM_10;                 //! pin for neopixel led

@@ -57,7 +57,7 @@ class BleCombo: public NimBLEServerCallbacks
   protected:
   uint8_t _buttons;
   BleConnectionStatusPtr connectionStatus;
-  NimBLEHIDDevice *hid;
+  NimBLEHIDDevicePtr hid;
 
   uint8_t batteryLevel;
   std::string deviceManufacturer;
