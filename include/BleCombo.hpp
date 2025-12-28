@@ -21,7 +21,7 @@ using NimBLEHIDDevicePtr = std::shared_ptr< NimBLEHIDDevice >;
 //
 // CLASS DEFINITION
 //
-class BleCombo: public NimBLEServerCallbacks
+class BleCombo: public NimBLEServerCallbacks, NimBLECharacteristicCallbacks
 {
   public:
   using Callback = std::function< void( void ) >;
@@ -53,6 +53,7 @@ class BleCombo: public NimBLEServerCallbacks
   void rawAction( uint8_t msg[], char msgSize );
   void onConnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo ) override;
   void onDisconnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason ) override;
+  void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override;
 
   protected:
   uint8_t _buttons;

@@ -35,26 +35,60 @@ void BleCombo::begin( void )
   Logger.debug( prefs::MYLOG, "BleCombo::begin create Server..." );
   NimBLEServer *pServer = NimBLEDevice::createServer();
 	Logger.debug( prefs::MYLOG, "BleCombo::begin set callbacks..." );
-  // pServer->setCallbacks( static_cast<NimBLEServerCallbacks*>(connectionStatus.get()) );
   pServer->setCallbacks( this );
-
+  //
+	// HID Devices 
+	//
   Logger.debug( prefs::MYLOG, "BleCombo::begin create HID Info..." );
+	// mouse device
   hid = std::make_shared<NimBLEHIDDevice>(pServer);
 	if (hid.get() == nullptr)
 	{
 		Logger.error(prefs::MYLOG, "BleCombo::begin...hid is nullptr!");
 		return;
 	}
+	// mouse device
   connectionStatus->inputMouse = hid->getInputReport( MOUSE_ID );  // <-- input REPORTID from report map
-
+	if (connectionStatus->inputMouse == nullptr)
+	{
+		Logger.error(prefs::MYLOG, "BleCombo::begin...inputMouse is nullptr!");
+		return;
+	}
+	else
+	{
+		Logger.debug(prefs::MYLOG, "BleCombo::begin...input mouse created");
+	}
+  // keyboard device
+	connectionStatus->inputKeyboard = hid->getInputReport(KEYBOARD_ID); // <-- input REPORTID from report map
+	if (connectionStatus->inputKeyboard == nullptr)
+	{
+		Logger.error(prefs::MYLOG, "BleCombo::begin...inputKeyboard is nullptr!");
+		return;
+	}
+	else
+	{
+		Logger.debug(prefs::MYLOG, "BleCombo::begin...input keyboard created");
+	}
+	connectionStatus->outputKeyboard = hid->getOutputReport(KEYBOARD_ID);
+	if (connectionStatus->outputKeyboard == nullptr)
+	{
+		Logger.error(prefs::MYLOG, "BleCombo::begin...outputKeyboard is nullptr!");
+		return;
+	}
+	else
+	{
+		Logger.debug(prefs::MYLOG, "BleCombo::begin...output keyboard created");
+	}
+	connectionStatus->outputKeyboard->setCallbacks(this);
+  // complete hid setup
   hid->setManufacturer( deviceManufacturer );
   hid->setPnp( 0x02, 0xe502, 0xa111, 0x0210 );
   hid->setHidInfo( 0x00, 0x02 );
   hid->setReportMap( _hidReportDescriptorPtr, hidReportDescriptorSize );
   hid->startServices();
-
+  // make the device visible
   startAdvertizing();
-
+  // etc...
   hid->setBatteryLevel( batteryLevel );
   Logger.debug( prefs::MYLOG, "BleCombo::begin...OK" );
 }
@@ -169,6 +203,13 @@ void BleCombo::onDisconnect( NimBLEServer *pServer, NimBLEConnInfo &connInfo, in
   if ( disconnectCallback )
     disconnectCallback();
   Logger.debug( prefs::MYLOG, "BleCombo::onDisconnect..." );
+}
+
+void BleCombo::onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo)
+{
+	// from NimBLECharacteristicCallbacks
+	uint8_t *value = (uint8_t *)(pCharacteristic->getValue().c_str());
+  Logger.debug( prefs::MYLOG, "BleCombo::onWrite special keys: %d...", *value );
 }
 
 void BleCombo::onConnect( Callback cb )
