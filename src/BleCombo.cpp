@@ -182,6 +182,17 @@ bool BleCombo::m_isPressed( uint8_t b ) const
   return false;
 }
 
+bool BleCombo::m_direct( MouseMovement *mv )
+{
+  if ( this->isConnected() )
+  {
+    connectionStatus->inputMouse->setValue( static_cast< uint8_t * >( mv[ 0 ] ), 5 );
+    connectionStatus->inputMouse->notify();
+    return true;
+  }
+  return false;
+}
+
 // press() adds the specified key (printing, non-printing, or modifier)
 // to the persistent key report and sends the report.  Because of the way
 // USB HID works, the host acts like the key remains pressed until we

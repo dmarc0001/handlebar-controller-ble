@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "keycodes.hpp"
+#include "joystick.hpp"
 
 using NimBLEHIDDevicePtr = std::shared_ptr< NimBLEHIDDevice >;
 
@@ -35,6 +36,7 @@ class BleCombo: public Print, NimBLEServerCallbacks, NimBLECharacteristicCallbac
   void m_press( uint8_t b = MOUSE_LEFT );            // press LEFT by default
   void m_release( uint8_t b = MOUSE_LEFT );          // release LEFT by default
   bool m_isPressed( uint8_t b = MOUSE_LEFT ) const;  // check LEFT by default
+  bool m_direct(MouseMovement *mv);
   bool isConnected( void ) const;
   void setBatteryLevel( uint8_t level );
   bool isAdvertizing();

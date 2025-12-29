@@ -69,10 +69,14 @@ void loop()
       nextTimeToKeyboardEvent = millis() + 20000;
     }
     Movement mv = BJoystick::getMovement();
-    if( mv.wasMoved )
+    if ( mv.wasMoved )
     {
-      Logger.debug( prefs::MYLOG, "Joystick moved!" );
-      delay(5);
+      if ( mv.mv[ BUTTONS ] )
+        Logger.debug( prefs::MYLOG, "Joystick moved! (+Button)" );
+      else
+        Logger.debug( prefs::MYLOG, "Joystick moved!" );
+      ConfigObj::combo->m_direct( &( mv.mv ) );
+      delay( 5 );
     }
   }
   else

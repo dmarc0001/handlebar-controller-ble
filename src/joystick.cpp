@@ -61,11 +61,18 @@ Movement BJoystick::getMovement()
       movement.wasMoved = true;
       // copy data
       for ( int i = 0; i < sizeof( MouseMovement ); i++ )
+      {
         movement.mv[ i ] = BJoystick::mMovement[ i ];
+        if( 0 != BUTTONS )
+          // aLL BUT buttons DELETE
+          BJoystick::mMovement[ i ] = 0;
+      }
       // in object mark as no moved
       BJoystick::moved = false;
       // delete data
-      memset( static_cast< void * >( mMovement ), 0, sizeof( MouseMovement ) );
+      // memset( static_cast< void * >( mMovement ), 0, sizeof( MouseMovement ) );
+      // buttons save...
+      // BJoystick::mMovement[BUTTONS] = movement.mv[BUTTONS];
       // free semaphore
       xSemaphoreGive( BJoystick::joySem );
       // return movement
