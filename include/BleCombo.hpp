@@ -21,7 +21,7 @@ using NimBLEHIDDevicePtr = std::shared_ptr< NimBLEHIDDevice >;
 //
 // CLASS DEFINITION
 //
-class BleCombo: public NimBLEServerCallbacks, NimBLECharacteristicCallbacks
+class BleCombo: public Print, NimBLEServerCallbacks, NimBLECharacteristicCallbacks
 {
   public:
   using Callback = std::function< void( void ) >;
@@ -42,11 +42,11 @@ class BleCombo: public NimBLEServerCallbacks, NimBLECharacteristicCallbacks
   void onDisconnect( Callback cb );
   void startAdvertizing();
   void k_sendReport(KeyReport *keys);
-  // size_t k_press(uint8_t k);
-  // size_t k_release(uint8_t k);
-  // size_t write(uint8_t c);
-  // size_t write(const uint8_t *buffer, size_t size);
-  // void k_releaseAll(void);
+  size_t k_press(uint8_t k);
+  size_t k_release(uint8_t k);
+  size_t write(uint8_t c);
+  size_t write(const uint8_t *buffer, size_t size);
+  void k_releaseAll(void);
 
   protected:
   void m_buttons( uint8_t b );
@@ -59,7 +59,7 @@ class BleCombo: public NimBLEServerCallbacks, NimBLECharacteristicCallbacks
   uint8_t _buttons;
   BleConnectionStatusPtr connectionStatus;
   NimBLEHIDDevicePtr hid;
-
+  KeyReport _keyReport;
   uint8_t batteryLevel;
   std::string deviceManufacturer;
   std::string deviceName;

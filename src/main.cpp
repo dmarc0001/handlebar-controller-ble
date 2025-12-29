@@ -110,26 +110,24 @@ void loop()
       ConfigObj::combo->m_move( 1, 10 );
     }
     toggle = !toggle;
-    // ConfigObj::combo->move(1, 1);
-    // ConfigObj::combo->m_click(MOUSE_RIGHT);
     uint8_t col = colorcounter & 0x03;
     switch ( col )
     {
       case 0:
-        Logger.debug( prefs::MYLOG, "set LED color RED" );
+        // Logger.debug( prefs::MYLOG, "set LED color RED" );
         ConfigObj::led->setColor( 255, 0, 0 );
         break;
       case 1:
-        Logger.debug( prefs::MYLOG, "set LED color GREEN" );
+        // Logger.debug( prefs::MYLOG, "set LED color GREEN" );
         ConfigObj::led->setColor( 0, 255, 0 );
         break;
       case 2:
-        Logger.debug( prefs::MYLOG, "set LED color BLUE" );
+        // Logger.debug( prefs::MYLOG, "set LED color BLUE" );
         ConfigObj::led->setColor( 0, 0, 255 );
         break;
       case 3:
       default:
-        Logger.debug( prefs::MYLOG, "set LED off" );
+        // Logger.debug( prefs::MYLOG, "set LED off" );
         ConfigObj::led->setColor( 0, 0, 0 );
         break;
     }
@@ -141,8 +139,9 @@ void loop()
   if ( currentMillis > nextTimeToKeyboardEvent )
   {
     nextTimeToKeyboardEvent = currentMillis + 5000;
-    // Logger.debug(prefs::MYLOG, "keyboard action triggered...");
-    // ConfigObj::combo->write('a');
+    Logger.debug(prefs::MYLOG, "keyboard action triggered...");
+    uint8_t myChar = 'a';
+    ConfigObj::combo->write(myChar);
     // ConfigObj::combo->print("hello");
     // ConfigObj::combo->write(KEY_RETURN);
   }
