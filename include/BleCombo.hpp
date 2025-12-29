@@ -42,10 +42,15 @@ class BleCombo: public Print, NimBLEServerCallbacks, NimBLECharacteristicCallbac
   void onDisconnect( Callback cb );
   void startAdvertizing();
   void k_sendReport(KeyReport *keys);
+  void k_sendReport(MediaKeyReport* keys);
+
   size_t k_press(uint8_t k);
+  size_t k_press(const MediaKeyReport k);
   size_t k_release(uint8_t k);
+  size_t k_release(const MediaKeyReport k);
   size_t write(uint8_t c);
   size_t write(const uint8_t *buffer, size_t size);
+  size_t write(const MediaKeyReport c);
   void k_releaseAll(void);
 
   protected:
@@ -60,6 +65,7 @@ class BleCombo: public Print, NimBLEServerCallbacks, NimBLECharacteristicCallbac
   BleConnectionStatusPtr connectionStatus;
   NimBLEHIDDevicePtr hid;
   KeyReport _keyReport;
+  MediaKeyReport _mediaKeyReport;
   uint8_t batteryLevel;
   std::string deviceManufacturer;
   std::string deviceName;

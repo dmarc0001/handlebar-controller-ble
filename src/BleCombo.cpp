@@ -19,9 +19,14 @@ static const char *LOG_TAG = "NimBLEDevice";
 #include "BleHidAsciiMap.hpp"
 
 BleCombo::BleCombo( std::string _deviceName, std::string _deviceManufacturer, uint8_t _batteryLevel )
-    : _buttons( 0 ), hid( nullptr ), deviceName( _deviceName ), deviceManufacturer( _deviceManufacturer ), batteryLevel( _batteryLevel )
+    : _buttons( 0 )
+    , hid( nullptr )
+    , deviceName( _deviceName )
+    , deviceManufacturer( _deviceManufacturer )
+    , batteryLevel( _batteryLevel )
 {
   connectionStatus = std::make_shared< BleConnectionStatus >();
+  // prepare correctly keymap report, CARE IT
   memset( static_cast< void * >( &_keyReport ), 0, sizeof( KeyReport ) );
 }
 
@@ -231,6 +236,19 @@ size_t BleCombo::k_press( uint8_t k )
   return 1;
 }
 
+size_t BleCombo::k_press( const MediaKeyReport k )
+{
+  uint16_t k_16 = k[ 1 ] | ( k[ 0 ] << 8 );
+  uint16_t mediaKeyReport_16 = _mediaKeyReport[ 1 ] | ( _mediaKeyReport[ 0 ] << 8 );
+
+  mediaKeyReport_16 |= k_16;
+  _mediaKeyReport[ 0 ] = ( uint8_t ) ( ( mediaKeyReport_16 & 0xFF00 ) >> 8 );
+  _mediaKeyReport[ 1 ] = ( uint8_t ) ( mediaKeyReport_16 & 0x00FF );
+
+  k_sendReport( &_mediaKeyReport );
+  return 1;
+}
+
 // release() takes the specified key out of the persistent key report and
 // sends the report.  This tells the OS the key is no longer pressed and that
 // it shouldn't be repeated any more.
@@ -274,39 +292,55 @@ size_t BleCombo::k_release( uint8_t k )
   return 1;
 }
 
+size_t BleCombo::k_release( const MediaKeyReport k )
+{
+  uint16_t k_16 = k[ 1 ] | ( k[ 0 ] << 8 );
+  uint16_t mediaKeyReport_16 = _mediaKeyReport[ 1 ] | ( _mediaKeyReport[ 0 ] << 8 );
+  mediaKeyReport_16 &= ~k_16;
+  _mediaKeyReport[ 0 ] = ( uint8_t ) ( ( mediaKeyReport_16 & 0xFF00 ) >> 8 );
+  _mediaKeyReport[ 1 ] = ( uint8_t ) ( mediaKeyReport_16 & 0x00FF );
+
+  k_sendReport( &_mediaKeyReport );
+  return 1;
+}
+
 void BleCombo::k_releaseAll( void )
 {
-  _keyReport.keys[ 0 ] = 0;
-  _keyReport.keys[ 1 ] = 0;
-  _keyReport.keys[ 2 ] = 0;
-  _keyReport.keys[ 3 ] = 0;
-  _keyReport.keys[ 4 ] = 0;
-  _keyReport.keys[ 5 ] = 0;
-  _keyReport.modifiers = 0;
+  // _keyReport.keys[ 0 ] = 0;
+  // _keyReport.keys[ 1 ] = 0;
+  // _keyReport.keys[ 2 ] = 0;
+  // _keyReport.keys[ 3 ] = 0;
+  // _keyReport.keys[ 4 ] = 0;
+  // _keyReport.keys[ 5 ] = 0;
+  // _keyReport.modifiers = 0;
+  memset( static_cast< void * >( &_keyReport ), 0, sizeof( KeyReport ) );
   k_sendReport( &_keyReport );
 }
 
 void BleCombo::k_sendReport( KeyReport *keys )
 {
-  Logger.debug( prefs::MYLOG, "BleCombo::sendReport " );
-  Logger.debug( prefs::MYLOG, " 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x mod 0x%x", keys->keys[ 0 ], keys->keys[ 1 ], keys->keys[ 2 ],
-                keys->keys[ 3 ], keys->keys[ 4 ], keys->keys[ 5 ], keys->modifiers );
   if ( isConnected() )
   {
     connectionStatus->inputKeyboard->setValue( ( uint8_t * ) keys, sizeof( KeyReport ) );
     connectionStatus->inputKeyboard->notify();
   }
-  Logger.debug( prefs::MYLOG, "BleCombo::sendReport key...OK" );
+}
+
+void BleCombo::k_sendReport( MediaKeyReport *keys )
+{
+  if ( isConnected() )
+  {
+    connectionStatus->inputMediaKeys->setValue( ( uint8_t * ) keys, sizeof( MediaKeyReport ) );
+    connectionStatus->inputMediaKeys->notify();
+  }
 }
 
 size_t BleCombo::write( uint8_t c )
 {
-  Logger.debug( prefs::MYLOG, "BleCombo::write char: 0x%x...", c );
   uint8_t p = k_press( c );  // Keydown
   vTaskDelay( 3 );
   k_release( c );  // Keyup
-  Logger.debug( prefs::MYLOG, "BleCombo::write char: 0x%x... OK", c );
-  return p;  // just return the result of press() since release() almost always returns 1
+  return p;        // just return the result of press() since release() almost always returns 1
 }
 
 size_t BleCombo::write( const uint8_t *buffer, size_t size )
@@ -328,6 +362,14 @@ size_t BleCombo::write( const uint8_t *buffer, size_t size )
     buffer++;
   }
   return n;
+}
+
+size_t BleCombo::write( const MediaKeyReport c )
+{
+  uint16_t p = k_press( c );  // Keydown
+  vTaskDelay( 3 );
+  k_release( c );  // Keyup
+  return p;        // just return the result of press() since release() almost always returns 1
 }
 
 bool BleCombo::isConnected( void ) const

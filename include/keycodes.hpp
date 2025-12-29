@@ -8,6 +8,7 @@ typedef struct
   uint8_t keys[6];
 } KeyReport;
 
+typedef uint8_t MediaKeyReport[2];
 
 constexpr uint8_t MOUSE_LEFT = 1;
 constexpr uint8_t MOUSE_RIGHT = 2;
@@ -64,21 +65,19 @@ constexpr uint8_t KEY_F22 = 0xF9;
 constexpr uint8_t KEY_F23 = 0xFA;
 constexpr uint8_t KEY_F24 = 0xFB;
 
-// typedef uint8_t MediaKeyReport[2];
-
-// constexpr MediaKeyReport KEY_MEDIA_NEXT_TRACK = {1, 0};
-// constexpr MediaKeyReport KEY_MEDIA_PREVIOUS_TRACK = {2, 0};
-// constexpr MediaKeyReport KEY_MEDIA_STOP = {4, 0};
-// constexpr MediaKeyReport KEY_MEDIA_PLAY_PAUSE = {8, 0};
-// constexpr MediaKeyReport KEY_MEDIA_MUTE = {16, 0};
-// constexpr MediaKeyReport KEY_MEDIA_VOLUME_UP = {32, 0};
-// constexpr MediaKeyReport KEY_MEDIA_VOLUME_DOWN = {64, 0};
-// constexpr MediaKeyReport KEY_MEDIA_WWW_HOME = {128, 0};
-// constexpr MediaKeyReport KEY_MEDIA_LOCAL_MACHINE_BROWSER = {0, 1}; // Opens "My Computer" on Windows
-// constexpr MediaKeyReport KEY_MEDIA_CALCULATOR = {0, 2};
-// constexpr MediaKeyReport KEY_MEDIA_WWW_BOOKMARKS = {0, 4};
-// constexpr MediaKeyReport KEY_MEDIA_WWW_SEARCH = {0, 8};
-// constexpr MediaKeyReport KEY_MEDIA_WWW_STOP = {0, 16};
-// constexpr MediaKeyReport KEY_MEDIA_WWW_BACK = {0, 32};
-// constexpr MediaKeyReport KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION = {0, 64}; // Media Selection
-// constexpr MediaKeyReport KEY_MEDIA_EMAIL_READER = {0, 128};
+constexpr MediaKeyReport KEY_MEDIA_NEXT_TRACK = {1, 0};
+constexpr MediaKeyReport KEY_MEDIA_PREVIOUS_TRACK = {2, 0};
+constexpr MediaKeyReport KEY_MEDIA_STOP = {4, 0};
+constexpr MediaKeyReport KEY_MEDIA_PLAY_PAUSE = {8, 0};
+constexpr MediaKeyReport KEY_MEDIA_MUTE = {16, 0};
+constexpr MediaKeyReport KEY_MEDIA_VOLUME_UP = {32, 0};
+constexpr MediaKeyReport KEY_MEDIA_VOLUME_DOWN = {64, 0};
+constexpr MediaKeyReport KEY_MEDIA_WWW_HOME = {128, 0};
+constexpr MediaKeyReport KEY_MEDIA_LOCAL_MACHINE_BROWSER = {0, 1}; // Opens "My Computer" on Windows
+constexpr MediaKeyReport KEY_MEDIA_CALCULATOR = {0, 2};
+constexpr MediaKeyReport KEY_MEDIA_WWW_BOOKMARKS = {0, 4};
+constexpr MediaKeyReport KEY_MEDIA_WWW_SEARCH = {0, 8};
+constexpr MediaKeyReport KEY_MEDIA_WWW_STOP = {0, 16};
+constexpr MediaKeyReport KEY_MEDIA_WWW_BACK = {0, 32};
+constexpr MediaKeyReport KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION = {0, 64}; // Media Selection
+constexpr MediaKeyReport KEY_MEDIA_EMAIL_READER = {0, 128};

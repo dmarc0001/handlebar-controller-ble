@@ -141,9 +141,10 @@ void loop()
     nextTimeToKeyboardEvent = currentMillis + 5000;
     Logger.debug(prefs::MYLOG, "keyboard action triggered...");
     uint8_t myChar = 'a';
+    ConfigObj::combo->write(KEY_RETURN);
     ConfigObj::combo->write(myChar);
-    // ConfigObj::combo->print("hello");
-    // ConfigObj::combo->write(KEY_RETURN);
+    ConfigObj::combo->print("hello");
+    ConfigObj::combo->write(KEY_RETURN);
   }
   delay( 5 );
 }

@@ -18,6 +18,7 @@ public:
   bool connected = false;
   NimBLECharacteristic *inputKeyboard;
   NimBLECharacteristic *outputKeyboard;
+  NimBLECharacteristic* inputMediaKeys;
   NimBLECharacteristic *inputMouse;
 };
 
