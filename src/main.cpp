@@ -2,10 +2,11 @@
  * ESP32-C3 Bluetooth HID (Tastatur & Maus)
  */
 #include <Arduino.h>
+#include <Elog.h>
 #include "appPreferences.hpp"
 #include "configs.hpp"
-#include <BleCombo.hpp>
-#include <Elog.h>
+#include "BleCombo.hpp"
+#include "joystick.hpp"
 
 void setup()
 {
@@ -25,6 +26,10 @@ void setup()
   ConfigObj::led = std::make_shared< neopixel::OnboardLed >( prefs::LED_PIN );
   ConfigObj::led->clear();
   ConfigObj::led->setColor( ConfigObj::led->color_yellow );
+  //
+  // init joystick object
+  //
+  BJoystick::begin();
   //
   // init Combo object
   //
@@ -63,6 +68,12 @@ void loop()
       delayIfNotConnected = prefs::DELAY_IF_BT_NOT_CONNECTED_MS;
       nextTimeToKeyboardEvent = millis() + 20000;
     }
+    Movement mv = BJoystick::getMovement();
+    if( mv.wasMoved )
+    {
+      Logger.debug( prefs::MYLOG, "Joystick moved!" );
+      delay(5);
+    }
   }
   else
   {
@@ -95,56 +106,56 @@ void loop()
   //
 
   // its time to move the mouse for test purposes?
-  if ( currentMillis > nextTimeToMouseMove )
-  {
-    static bool toggle{ false };
-    nextTimeToMouseMove = currentMillis + 2000;
-    // move the mouse one pixel
-    Logger.debug( prefs::MYLOG, "mouse action triggered..." );
-    if ( toggle )
-    {
-      ConfigObj::combo->m_move( 10, 1 );
-    }
-    else
-    {
-      ConfigObj::combo->m_move( 1, 10 );
-    }
-    toggle = !toggle;
-    uint8_t col = colorcounter & 0x03;
-    switch ( col )
-    {
-      case 0:
-        // Logger.debug( prefs::MYLOG, "set LED color RED" );
-        ConfigObj::led->setColor( 255, 0, 0 );
-        break;
-      case 1:
-        // Logger.debug( prefs::MYLOG, "set LED color GREEN" );
-        ConfigObj::led->setColor( 0, 255, 0 );
-        break;
-      case 2:
-        // Logger.debug( prefs::MYLOG, "set LED color BLUE" );
-        ConfigObj::led->setColor( 0, 0, 255 );
-        break;
-      case 3:
-      default:
-        // Logger.debug( prefs::MYLOG, "set LED off" );
-        ConfigObj::led->setColor( 0, 0, 0 );
-        break;
-    }
-    // just to be sure we dont overflow
-    ++colorcounter;
-  }
+  // if ( currentMillis > nextTimeToMouseMove )
+  // {
+  //   static bool toggle{ false };
+  //   nextTimeToMouseMove = currentMillis + 2000;
+  //   // move the mouse one pixel
+  //   Logger.debug( prefs::MYLOG, "mouse action triggered..." );
+  //   if ( toggle )
+  //   {
+  //     ConfigObj::combo->m_move( 10, 1 );
+  //   }
+  //   else
+  //   {
+  //     ConfigObj::combo->m_move( 1, 10 );
+  //   }
+  //   toggle = !toggle;
+  //   uint8_t col = colorcounter & 0x03;
+  //   switch ( col )
+  //   {
+  //     case 0:
+  //       // Logger.debug( prefs::MYLOG, "set LED color RED" );
+  //       ConfigObj::led->setColor( 255, 0, 0 );
+  //       break;
+  //     case 1:
+  //       // Logger.debug( prefs::MYLOG, "set LED color GREEN" );
+  //       ConfigObj::led->setColor( 0, 255, 0 );
+  //       break;
+  //     case 2:
+  //       // Logger.debug( prefs::MYLOG, "set LED color BLUE" );
+  //       ConfigObj::led->setColor( 0, 0, 255 );
+  //       break;
+  //     case 3:
+  //     default:
+  //       // Logger.debug( prefs::MYLOG, "set LED off" );
+  //       ConfigObj::led->setColor( 0, 0, 0 );
+  //       break;
+  //   }
+  //   // just to be sure we dont overflow
+  //   ++colorcounter;
+  // }
 
   // its time to make an keyboard event?
-  if ( currentMillis > nextTimeToKeyboardEvent )
-  {
-    nextTimeToKeyboardEvent = currentMillis + 5000;
-    Logger.debug(prefs::MYLOG, "keyboard action triggered...");
-    uint8_t myChar = 'a';
-    ConfigObj::combo->write(KEY_RETURN);
-    ConfigObj::combo->write(myChar);
-    ConfigObj::combo->print("hello");
-    ConfigObj::combo->write(KEY_RETURN);
-  }
+  // if ( currentMillis > nextTimeToKeyboardEvent )
+  // {
+  //   nextTimeToKeyboardEvent = currentMillis + 5000;
+  //   Logger.debug(prefs::MYLOG, "keyboard action triggered...");
+  //   uint8_t myChar = 'a';
+  //   ConfigObj::combo->write(KEY_RETURN);
+  //   ConfigObj::combo->write(myChar);
+  //   ConfigObj::combo->print("hello");
+  //   ConfigObj::combo->write(KEY_RETURN);
+  // }
   delay( 5 );
 }
