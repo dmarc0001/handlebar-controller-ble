@@ -5,10 +5,10 @@ namespace prefs
 {
   constexpr int MYLOG = 0;
   constexpr int TASKLOG = 1;
-  constexpr char *DEVICE_NAME = ( char * ) "C3-Combo Device-5";  //! device name for bluetooth
-  constexpr char *DEVICE_MANUFACT = ( char * ) "DIRK M";         //! device name for bluetooth
-  constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_DEBUG;         //! loglevel for App
-  constexpr uint8_t LED_PIN = GPIO_NUM_10;                       //! pin for neopixel led
+  constexpr char *DEVICE_NAME = ( char * ) "C3-Combo Navi";  //! device name for bluetooth
+  constexpr char *DEVICE_MANUFACT = ( char * ) "DIRK";       //! device name for bluetooth
+  constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_DEBUG;     //! loglevel for App
+  constexpr uint8_t LED_PIN = GPIO_NUM_10;                   //! pin for neopixel led
   // constexpr uint8_t LED_PIN = GPIO_NUM_8;                    //! pin for supermini
   constexpr uint8_t X_AXIS_PIN = GPIO_NUM_3;                   //! pin for x axis
   constexpr uint8_t Y_AXIS_PIN = GPIO_NUM_4;                   //! pin for y axis
