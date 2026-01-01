@@ -8,7 +8,8 @@
 #include "appPreferences.hpp"
 #include "keycodes.hpp"
 
-using MouseMovement = uint8_t[5];
+using MouseMovement = uint8_t[ 5 ];
+using MouseMovementCalibr = uint16_t[ 5 ];
 
 enum MovementFields : int
 {
@@ -19,28 +20,55 @@ enum MovementFields : int
   H_WHEEL = 4
 };
 
-typedef struct 
+typedef struct
 {
   bool wasMoved;
   MouseMovement mv;
 } Movement;
 
+typedef struct
+{
+  bool wasMoved;
+  MouseMovementCalibr mv;
+} MovementCalibr;
+
+typedef struct
+{
+  uint16_t min;
+  uint16_t max;
+  uint16_t center;
+  uint16_t deadzone;
+} JoystickRangeAxis;
+
+typedef struct
+{
+  JoystickRangeAxis x;
+  JoystickRangeAxis y;
+} JoystickRange;
 
 class BJoystick
 {
   private:
-  static uint16_t xCenter;
-  static uint16_t yCenter;
-  static TaskHandle_t taskHandle;   //! only one times
-  static SemaphoreHandle_t joySem;  //! is access to joystick values free?
+  static TaskHandle_t normAdTaskHandle;     //! only one times
+  static TaskHandle_t calibreTaskHandle;    //! only one times
+  static TaskHandle_t calibreADTaskHandle;  //! only one times
+  static SemaphoreHandle_t joySem;          //! is access to joystick values free?
   static MouseMovement mMovement;
-  static bool moved;
+  static MouseMovementCalibr mMovementCalibr;
+  static JoystickRange range;
+  static volatile bool moved;
+  static volatile bool movedCalibr;
 
   public:
   static void begin();
   static void end();
+  static bool calibreStick();
+  static void setCalibre( JoystickRange & );
   static Movement getMovement();
+  static MovementCalibr getMovementCalibr();
 
   private:
-  static void mTask( void * );  //! the task for preasure
+  static void normAdTask( void * );   //! the task for joystick work
+  static void caliberTask( void * );  //! the task for joystick calibre
+  static void adCalTask( void * );    //! the task for joystick calibre
 };

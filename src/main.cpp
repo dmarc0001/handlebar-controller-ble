@@ -3,6 +3,7 @@
  */
 #include <Arduino.h>
 #include <Elog.h>
+#include "main.hpp"
 #include "appPreferences.hpp"
 #include "BleCombo.hpp"
 #include "joystick.hpp"
@@ -24,6 +25,7 @@ void setup()
   // init joystick object
   //
   BJoystick::begin();
+  delay( 10 );
   //
   // init Combo object
   //
@@ -31,12 +33,12 @@ void setup()
   combo = std::make_shared< BleCombo >( prefs::DEVICE_NAME, prefs::DEVICE_MANUFACT, 90 );
   Logger.debug( prefs::MYLOG, "init mouse/keyboard...OK" );
   Logger.debug( prefs::MYLOG, "init mouse/keyboard beginn..." );
-  combo->begin();
   Logger.debug( prefs::MYLOG, "init mouse/keyboard beginn...OK" );
 
   Logger.debug( prefs::MYLOG, "init mouse/keyboard beginn...OK" );
 
   Logger.debug( prefs::MYLOG, "Start C3 HID Setup...OK" );
+  combo->begin();
 }
 
 void loop()
@@ -46,6 +48,8 @@ void loop()
   static uint32_t nextTimeToKeyboardEvent{ millis() + 20000 };
   static uint8_t colorcounter{ 0 };
   static bool wasConnected{ false };
+  static bool wasButtonDown{ false };
+  static uint32_t timeIfButtonIsLong{ 0 };
 
   // it was not connected and its time tio check again
   if ( combo->isConnected() )
@@ -64,9 +68,35 @@ void loop()
     if ( mv.wasMoved )
     {
       if ( mv.mv[ BUTTONS ] )
+      {
+        if ( mv.mv[ BUTTONS ] & MOUSE_LEFT )
+        {
+          if ( !wasButtonDown )
+          {
+            wasButtonDown = true;
+            // button just down
+            Logger.debug( prefs::MYLOG, "Button Down..." );
+            timeIfButtonIsLong = millis() + 3000;
+          }
+        }
         Logger.debug( prefs::MYLOG, "Joystick moved! (+Button)" );
+      }
       else
+      {
+        if ( wasButtonDown )
+        {
+          wasButtonDown = false;
+          Logger.debug( prefs::MYLOG, "Button Up..." );
+          // button was pressed, just released
+          if ( millis() > timeIfButtonIsLong )
+          {
+            Logger.debug( prefs::MYLOG, "Button long down..." );
+            BJoystick::calibreStick();
+            Logger.debug( prefs::MYLOG, "Button long down...OK" );
+          }
+        }
         Logger.debug( prefs::MYLOG, "Joystick moved!" );
+      }
       combo->m_direct( &( mv.mv ) );
       delay( 5 );
     }
@@ -87,13 +117,48 @@ void loop()
       delayIfNotConnected = prefs::MAX_DELAY_IF_BT_NOT_CONNECTED_MS;
     }
     String advStr = combo->isAdvertizing() ? "true" : "false";
-    Logger.debug( prefs::MYLOG, "BT wait for connevting (Advertizing: %s)", advStr.c_str() );
+    // Logger.debug( prefs::MYLOG, "BT wait for connevting (Advertizing: %s)", advStr.c_str() );
     if ( !combo->isAdvertizing() )
     {
       combo->startAdvertizing();
     }
-    delay( delayIfNotConnected );
-    return;
+
+    Movement mv = BJoystick::getMovement();
+    if ( mv.wasMoved )
+    {
+      if ( mv.mv[ BUTTONS ] )
+      {
+        if ( mv.mv[ BUTTONS ] & MOUSE_LEFT )
+        {
+          if ( !wasButtonDown )
+          {
+            wasButtonDown = true;
+            // button just down
+            Logger.debug( prefs::MYLOG, "Button Down..." );
+            timeIfButtonIsLong = millis() + 3000;
+          }
+        }
+        // Logger.debug( prefs::MYLOG, "Joystick moved! (+Button)" );
+      }
+      else
+      {
+        if ( wasButtonDown )
+        {
+          wasButtonDown = false;
+          Logger.debug( prefs::MYLOG, "Button Up..." );
+          // button was pressed, just released
+          if ( millis() > timeIfButtonIsLong )
+          {
+            Logger.debug( prefs::MYLOG, "Button long down..." );
+            BJoystick::calibreStick();
+            Logger.debug( prefs::MYLOG, "Button long down...OK" );
+          }
+        }
+        // Logger.debug( prefs::MYLOG, "Joystick moved!" );
+      }
+      delay( delayIfNotConnected );
+      return;
+    }
   }
 
   uint32_t currentMillis = millis();
