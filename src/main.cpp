@@ -52,8 +52,8 @@ void loop()
   static uint32_t delayIfNotConnected{ prefs::DELAY_IF_BT_NOT_CONNECTED_MS };
   static uint32_t nextTimeToMouseMove{ 0 };
   static uint32_t nextTimeToKeyboardEvent{ millis() + 20000 };
-  static uint8_t colorcounter{ 0 };
-  static bool wasConnected{ false };
+  static uint8_t counter{ 0 };
+  static bool wasConnected{ true };
   static bool wasButtonDown{ false };
   static uint32_t timeIfButtonIsLong{ 0 };
 
@@ -66,7 +66,7 @@ void loop()
     {
       Logger.debug( prefs::MYLOG, "BT Connected!" );
       wasConnected = true;
-      // analogWrite(prefs::LED_PIN, 255);
+      analogWrite(prefs::LED_PIN, 255 - 80);
       delayIfNotConnected = prefs::DELAY_IF_BT_NOT_CONNECTED_MS;
       nextTimeToKeyboardEvent = millis() + 20000;
     }
@@ -106,15 +106,21 @@ void loop()
       combo->m_direct( &( mv.mv ) );
       delay( 5 );
     }
+    delay( 5 );
   }
   else
   {
+    // 
+    // not connected
+    //
+    ++counter;
     if ( wasConnected )
     {
+      // just switches
       String advStr = combo->isAdvertizing() ? "true" : "false";
       Logger.debug( prefs::MYLOG, "BT Disconnected! (Advertizing: %s)", advStr.c_str() );
       wasConnected = false;
-      // analogWrite( prefs::LED_PIN, 255 );
+      analogWrite( prefs::LED_PIN, 255);
     }
     // still not connected, increase delay
     delayIfNotConnected += prefs::DELAY_IF_BT_NOT_CONNECTED_MS;
@@ -128,7 +134,18 @@ void loop()
     {
       combo->startAdvertizing();
     }
-
+    if( counter == 0 )
+      analogWrite( prefs::LED_PIN, 0 );
+    if ( counter == 30 )
+      analogWrite( prefs::LED_PIN, 255 );
+    // uint8_t aa = counter >> 3;
+    // if( aa & 0x3  == 0 )
+    // {
+    //   analogWrite( prefs::LED_PIN, 0 );
+    //   delay(80);
+    // }
+    // else if (aa & 0x03 == 3 )
+    //   analogWrite( prefs::LED_PIN, 255 );
     Movement mv = BJoystick::getMovement();
     if ( mv.wasMoved )
     {
@@ -160,13 +177,10 @@ void loop()
             Logger.debug( prefs::MYLOG, "Button long down...OK" );
           }
         }
-        // Logger.debug( prefs::MYLOG, "Joystick moved!" );
       }
-      delay( delayIfNotConnected );
-      return;
     }
+    delay( 5 );
   }
 
   uint32_t currentMillis = millis();
-  delay( 5 );
 }

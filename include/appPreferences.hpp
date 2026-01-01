@@ -11,7 +11,6 @@ namespace prefs
   constexpr char *DEVICE_MANUFACT = ( char * ) "DIRK";         //! device name for bluetooth
   constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_DEBUG;       //! loglevel for App
   constexpr uint8_t LED_PIN = GPIO_NUM_8;                      //! pin for supermini
-  constexpr uint8_t PWM_CHANNEL = 1;                           //! PWM CHANNEL
   constexpr uint8_t X_AXIS_PIN = GPIO_NUM_3;                   //! pin for x axis
   constexpr uint8_t Y_AXIS_PIN = GPIO_NUM_4;                   //! pin for y axis
   constexpr uint8_t BUTTON_PIN = GPIO_NUM_5;                   //! pin for button
