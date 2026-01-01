@@ -17,7 +17,10 @@
 #include "keycodes.hpp"
 #include "joystick.hpp"
 
+class BleCombo;
+
 using NimBLEHIDDevicePtr = std::shared_ptr< NimBLEHIDDevice >;
+using bleComboSptr = std::shared_ptr< class BleCombo >;
 
 //
 // CLASS DEFINITION

@@ -114,7 +114,7 @@ void BJoystick::mTask( void * )
       {
         if ( buttonPressed < 3 )
         {
-          // Logger.debug( prefs::TASKLOG, "joystick button pressed..." );
+          Logger.debug( prefs::TASKLOG, "joystick button pressed..." );
           if ( xSemaphoreTake( BJoystick::joySem, pdMS_TO_TICKS( 10 ) ) == pdTRUE )
           {
             // set left mouse button pressed
@@ -132,7 +132,7 @@ void BJoystick::mTask( void * )
       // button is not pressed
       if ( buttonPressed > 2 )
       {
-        // Logger.debug( prefs::TASKLOG, "joystick button released..." );
+        Logger.debug( prefs::TASKLOG, "joystick button released..." );
         buttonPressed = 0;
         if ( xSemaphoreTake( BJoystick::joySem, pdMS_TO_TICKS( 10 ) ) == pdTRUE )
         {
