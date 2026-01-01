@@ -6,6 +6,7 @@ namespace prefs
   constexpr int MYLOG = 0;
   constexpr int TASKLOG = 1;
   constexpr int CALLOG = 2;
+  constexpr char *APPNAME = ( char * ) "COMBO";                //! appname
   constexpr char *DEVICE_NAME = ( char * ) "C3-Combo Navi";    //! device name for bluetooth
   constexpr char *DEVICE_MANUFACT = ( char * ) "DIRK";         //! device name for bluetooth
   constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_DEBUG;       //! loglevel for App
@@ -23,4 +24,7 @@ namespace prefs
   constexpr uint32_t DELAY_IF_BT_NOT_CONNECTED_MS = 100;       //! delay if mouse not connected
   constexpr uint32_t MAX_DELAY_IF_BT_NOT_CONNECTED_MS = 1000;  //! maxdelay if mouse not connected
   constexpr uint32_t JOYSTICK_MEASURE_RTIME_DELTA_MS = 10;     //! realtime delta for joystick measurement
+  // constexpr const char *MOUNTPOINT{ "/spiffs" };               //! mountpoint/makrker filesystem
+  // constexpr const char *WEB_PARTITION_LABEL{ "mydata" };       //! label of the spiffs or null
+
 }  // namespace prefs

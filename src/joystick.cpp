@@ -1,7 +1,11 @@
 #include "joystick.hpp"
+#include "appCurrPrefs.hpp"
 #include <Elog.h>
+
+extern CurrPrefsPtr cPrefs;
+
 //
-// instnce members
+// instance members
 //
 TaskHandle_t BJoystick::normAdTaskHandle{ nullptr };
 TaskHandle_t BJoystick::calibreTaskHandle{ nullptr };
@@ -499,6 +503,11 @@ void BJoystick::caliberTask( void * )
     BJoystick::calibreADTaskHandle = nullptr;
     delay( 10 );
   }
+
+  Logger.debug( prefs::CALLOG, "write calibre to flash..." );
+  cPrefs->setJoystickRange(range);
+  Logger.debug( prefs::CALLOG, "write calibre to flash...OK" );
+  
   //
   // restart joystick normal task
   //

@@ -7,8 +7,10 @@
 #include "appPreferences.hpp"
 #include "BleCombo.hpp"
 #include "joystick.hpp"
+#include "appCurrPrefs.hpp"
 
 bleComboSptr combo;
+CurrPrefsPtr cPrefs;
 
 void setup()
 {
@@ -18,6 +20,7 @@ void setup()
   Logger.registerSerial( prefs::MYLOG, prefs::LOG_LEVEL, "main" );  // We want messages with DEBUG level and lower
   Logger.debug( prefs::MYLOG, "Start C3 HID Setup...OK" );
   Logger.debug( prefs::MYLOG, "START MAIN" );
+  cPrefs = std::make_shared< CurrPrefs >();
   pinMode( prefs::BUTTON_PIN, INPUT_PULLUP );
   pinMode( prefs::LED_PIN, OUTPUT );
   analogWrite( prefs::LED_PIN, 255 );
@@ -25,6 +28,9 @@ void setup()
   // init joystick object
   //
   BJoystick::begin();
+  Logger.debug( prefs::MYLOG, "load joystick calibration..." );
+  JoystickRange range = cPrefs->getJoystickRange();
+  BJoystick::setCalibre( range );
   delay( 10 );
   //
   // init Combo object
