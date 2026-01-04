@@ -3,13 +3,18 @@
 
 namespace prefs
 {
+  constexpr unsigned long SERIAL_SPEED = 115200UL;
   constexpr int MYLOG = 0;
   constexpr int TASKLOG = 1;
   constexpr int CALLOG = 2;
   constexpr char *APPNAME = ( char * ) "COMBO";                   //! appname
   constexpr char *DEVICE_NAME = ( char * ) "C3-Combo Navi";       //! device name for bluetooth
   constexpr char *DEVICE_MANUFACT = ( char * ) "DIRK";            //! device name for bluetooth
+  #ifdef BUILD_DEBUG
   constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_DEBUG;          //! loglevel for App
+  #else
+  constexpr const LogLevel LOG_LEVEL = ELOG_LEVEL_INFO;          //! loglevel for App
+  #endif
   constexpr uint8_t LED_PIN = GPIO_NUM_8;                         //! pin for supermini
   constexpr uint8_t LED_CONNECTED_BRIGHTNESS = 255 - 80;          //! brightness while connect
   constexpr uint8_t LED_ATTENTION_BRIGHTNESS = 0;                 //! brightness while attention

@@ -16,7 +16,7 @@ CurrPrefsPtr cPrefs;
 
 void setup()
 {
-  Serial.begin( 115200 );
+  Serial.begin( prefs::SERIAL_SPEED );
   // do not need
   esp_wifi_stop();
   // signal LED
@@ -31,12 +31,12 @@ void setup()
   analogWrite( prefs::LED_PIN, prefs::LED_OFF_BRIGHTNESS );
 #ifdef BUILD_DEBUG
   Serial.println( "Start C3 HID Setup..." );
-  delay( 6000 );
+  delay( 4000 );
 #else
-  delay( 100 );
+  delay( 10 );
 #endif
   Logger.registerSerial( prefs::MYLOG, prefs::LOG_LEVEL, "main" );  // We want messages with DEBUG level and lower
-  Logger.debug( prefs::MYLOG, "Start C3 HID Setup...OK" );
+  Logger.info( prefs::MYLOG, "Start C3 HID Setup" );
   Logger.debug( prefs::MYLOG, "START MAIN" );
   cPrefs = std::make_shared< CurrPrefs >();
   //
@@ -58,7 +58,7 @@ void setup()
 
   Logger.debug( prefs::MYLOG, "init mouse/keyboard beginn...OK" );
 
-  Logger.debug( prefs::MYLOG, "Start C3 HID Setup...OK" );
+  Logger.info( prefs::MYLOG, "Start C3 HID Setup...OK" );
   combo->begin();
 }
 
@@ -130,7 +130,7 @@ void loop()
     if ( !wasConnected )
     {
       // new connected the BLE stack, mak LED ON
-      Logger.debug( prefs::MYLOG, "BT Connected!" );
+      Logger.info( prefs::MYLOG, "BT Connected!" );
       wasConnected = true;
       analogWrite( prefs::LED_PIN, prefs::LED_CONNECTED_BRIGHTNESS );
     }
@@ -213,8 +213,9 @@ void loop()
     if ( wasConnected )
     {
       // just switches
-      String advStr = combo->isAdvertizing() ? "true" : "false";
-      Logger.debug( prefs::MYLOG, "BT Disconnected! (Advertizing: %s)", advStr.c_str() );
+      // String advStr = combo->isAdvertizing() ? "true" : "false";
+      Logger.info(prefs::MYLOG, "BT Disconnected!");
+      // Logger.debug( prefs::MYLOG, "BT Disconnected! (Advertizing: %s)", advStr.c_str() );
       wasConnected = false;
       analogWrite( prefs::LED_PIN, prefs::LED_OFF_BRIGHTNESS );
       timeIfDeviceGoDeepSleep = millis() + prefs::DEEP_SLEEP_TIMER_DELAY_MS;
@@ -225,7 +226,7 @@ void loop()
     {
       combo->startAdvertizing();
     }
-    // 
+    //
     // mak an flashing with the blue LED
     //
     if ( counter == 0 )
@@ -314,8 +315,8 @@ esp_sleep_wakeup_cause_t make_sleep( esp_sleep_type _type )
       //
       // disable (for secure) timer wakeup
       //
-      esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TIMER);
-      // 
+      esp_sleep_disable_wakeup_source( ESP_SLEEP_WAKEUP_TIMER );
+      //
       // enable GPIO for wakeup controller
       //
       is_ok = esp_deep_sleep_enable_gpio_wakeup( BIT( prefs::BUTTON_PIN ), ESP_GPIO_WAKEUP_GPIO_LOW );
